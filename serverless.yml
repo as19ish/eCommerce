@@ -1,0 +1,89 @@
+service: product-management
+
+frameworkVersion: '4'
+
+provider:
+  name: aws
+  runtime: nodejs20.x
+  region: us-east-1
+  environment:
+    PRODUCTS_TABLE: Products
+    TAXONOMY_TABLE: ProductTaxonomyAttributes
+  iam:
+    role:
+      statements:
+        - Effect: "Allow"
+          Action:
+            - "dynamodb:*"
+          Resource: 
+            - "arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.PRODUCTS_TABLE}"
+plugins:
+  - serverless-appsync-plugin
+
+functions:
+  createProduct:
+    handler: handler.createProduct
+    events:
+      - http:
+          path: products
+          method: post
+
+  getProductById:
+    handler: handler.getProductById
+    events:
+      - http:
+          path: products/{productId}
+          method: get
+
+  updateProduct:
+    handler: handler.updateProduct
+    events:
+      - http:
+          path: products/{productId}
+          method: put
+
+  deleteProduct:
+    handler: handler.deleteProduct
+    events:
+      - http:
+          path: products/{productId}
+          method: delete
+
+resources:
+  Resources:
+    ProductsTable:
+      Type: "AWS::DynamoDB::Table"
+      Properties:
+        TableName: ${self:provider.environment.PRODUCTS_TABLE}
+        AttributeDefinitions:
+          - AttributeName: ProductId
+            AttributeType: S
+        KeySchema:
+          - AttributeName: ProductId
+            KeyType: HASH
+        BillingMode: PAY_PER_REQUEST
+    ProductTaxonomyTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:provider.environment.TAXONOMY_TABLE}
+        AttributeDefinitions:
+          - AttributeName: TaxonomyId
+            AttributeType: S
+          - AttributeName: ParentId
+            AttributeType: S
+          - AttributeName: Name
+            AttributeType: S
+        KeySchema:
+          - AttributeName: TaxonomyId
+            KeyType: HASH
+        GlobalSecondaryIndexes:
+          - IndexName: ParentIndex
+            KeySchema:
+              - AttributeName: ParentId
+                KeyType: HASH
+              - AttributeName: Name
+                KeyType: RANGE
+            Projection:
+              ProjectionType: ALL
+        BillingMode: PAY_PER_REQUEST
+

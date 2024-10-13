@@ -1,0 +1,51 @@
+# Defines the Product type and its fields
+type Product {
+  ProductId: ID!         # Unique identifier for the product
+  Name: String!          # Name of the product
+  Description: String    # Detailed description of the product
+  Price: Float!          # Price of the product
+  Category: String!      # Category the product belongs to
+  Stock: Int!            # Stock or inventory count
+  CreatedAt: String!     # Timestamp when the product was created
+  UpdatedAt: String!     # Timestamp when the product was last updated
+}
+
+# Defines the available queries (fetch data)
+type Query {
+  # Get a product by its ID
+  getProduct(id: ID!): Product
+
+  # List all products (optional: you can implement pagination later)
+  listProducts: [Product]
+}
+
+# Defines the available mutations (create, update, delete data)
+type Mutation {
+  # Create a new product with the required fields
+  createProduct(
+    name: String!, 
+    description: String, 
+    price: Float!, 
+    category: String!, 
+    stock: Int!
+  ): Product
+
+  # Update an existing product by ID
+  updateProduct(
+    id: ID!, 
+    name: String, 
+    description: String, 
+    price: Float, 
+    category: String, 
+    stock: Int
+  ): Product
+
+  # Delete a product by its ID
+  deleteProduct(id: ID!): String
+}
+
+# The schema root that binds queries and mutations
+schema {
+  query: Query
+  mutation: Mutation
+}
