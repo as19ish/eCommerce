@@ -1,6 +1,6 @@
 service: product-management
 
-frameworkVersion: '4'
+frameworkVersion: '3'
 
 provider:
   name: aws
@@ -17,8 +17,7 @@ provider:
             - "dynamodb:*"
           Resource: 
             - "arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.PRODUCTS_TABLE}"
-plugins:
-  - serverless-appsync-plugin
+
 
 functions:
   createProduct:
