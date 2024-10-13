@@ -34,6 +34,8 @@ module.exports.createProduct = async (event) => {
     };
   }
 
+  
+
   const productId = uuidv4();
   const timestamp = new Date().toISOString();
 
